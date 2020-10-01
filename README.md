@@ -20,3 +20,37 @@ Convolution
 -----------
 ![image](https://user-images.githubusercontent.com/61686244/94778872-f7de8a80-0400-11eb-8944-feda69be8819.png)
 
+Transposed Convolution
+----------------------
+![image](https://user-images.githubusercontent.com/61686244/94798906-43069680-041d-11eb-96bf-51b07cf16cc6.png)
+
+Efficient Sub-pixel Convolution Layer
+-------------------------------------
+![image](https://user-images.githubusercontent.com/61686244/94798998-6f221780-041d-11eb-9b54-e3192626451c.png)
+* Transposed convolution의 단점을 개선하여 나온  sub pixel conv layer
+* LR 특징 맵으로 부터 HR 이미지를 만들어내는 layer 각 특징 맵 마다 upscaling filter가 존재
+* 식 3을 보게 되면 ps부분이 Efficient sub pixel Conv layer를 의미하며 Convolution Layer를 거쳐 나온 특징 맵을 주기적으로 셔플하여 재배치 한다는 것을 의미
+* Sub pixel conv layer인 periodic shuffle ps를 거치전에는 shape이 H x W x (C x R x R)이였다가 ps를 거친 후 모양은 rH x rW x C로 변하게됨
+* 식 5는 ESPCN의 Loss function은 MSE Loss이며 이는 LR img를 input으로 넣고, conv lyaer를 거쳐 sub pixel conv layer인 PS layer를 거쳐서 나온 output을 HR img에 대해서 pixel-wise mean square를 적용한 것 
+
+The mean PSNR for different models
+----------------------------------
+![image](https://user-images.githubusercontent.com/61686244/94798998-6f221780-041d-11eb-9b54-e3192626451c.png)
+![image](https://user-images.githubusercontent.com/61686244/94799516-38003600-041e-11eb-8cd8-b420793de1c8.png)
+
+* 첫 번쨰 결과로 sub pixel convolution layer의 효과에 대해서 실험을 한 결과
+* 첫 번째로 SR분야에서 평가지표로 많이 사용되는 네트워크 SRCNN과 비교한 결과로 91개의 img를 이용하여 학습한뒤에 비교해본 결과는 SRCNN과 같은 결과를 냈지만 ImageNet image 로 트레이닝을하고 ReLU 활성함수를 사용한 ESPCN 네트워크는 SRCNN과 비교했을때 더 좋은 결과를 달성
+
+HD Videos from Xiph database
+----------------------------
+![image](https://user-images.githubusercontent.com/61686244/94799616-59f9b880-041e-11eb-9d63-8e49bacdbbe4.png)
+
+![image](https://user-images.githubusercontent.com/61686244/94799476-2323a280-041e-11eb-8c44-294ce78f3272.png)
+
+Conclusions
+-----------
+* 첫 번째 레이어에서 non-adaptive upscaling한 모델이 adaptive scaling한 모델과 비교해 SISR upscaling에 대해 성능이 더 낮고, 계산 복잡도가 높음
+* HR Space 대신 LR Space 에서 특징을 추출함
+* LR Space를 이용하기위해 sub-pixel Convolution layer를 사용-> 효율적인 메모리, 계산량
+* 기존의 CNN방식과 비교해 속도와 성능 모두 향상, 시간 10배, img+0.15dB, vid+0.39dB
+* 단일 GPU로 실시간 SR HD영상을 만들 수 있음
